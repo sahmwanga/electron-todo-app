@@ -11,4 +11,12 @@ const listTask = async () => {
   return data;
 };
 
-module.exports = { addTask, listTask };
+const deleteAllTask = async () => {
+  return await db.Tasks.destroy({ where: {}, truncate: true });
+};
+
+const deleteById = async (taskId) => {
+  return await db.Tasks.destroy({ where: { id: taskId } });
+};
+
+module.exports = { addTask, listTask, deleteAllTask, deleteById };

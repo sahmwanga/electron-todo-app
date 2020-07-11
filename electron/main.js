@@ -2,9 +2,14 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
 
-const { addTask, listTask } = require('./services/task.service');
+const {
+  addTask,
+  listTask,
+  deleteAllTask,
+  deleteById,
+} = require('./services/task.service');
 
-const { channels } = require('../src/shared/constants');
+const { tasks } = require('../src/shared/constants');
 
 let mainWindow;
 
@@ -48,22 +53,35 @@ app.on('activate', function () {
   }
 });
 
-ipcMain.on(channels.APP_INFO, async (event, arg) => {
-  const newTask = {
-    title: arg,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  const task = await addTask(newTask);
-  console.log(task);
-  event.sender.send(channels.APP_INFO, {
-    task,
-  });
+ipcMain.on(tasks.CREATE_TASK, async (event, arg) => {
+  try {
+    const task = await addTask(arg);
+    fetchTasks(event);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
-ipcMain.on(channels.GET_TASK, async (event) => {
-  const tasks = await listTask();
-  console.log(tasks);
-  event.sender.send(channels.GET_TASK, { tasks });
+ipcMain.on(tasks.GET_TASK, (event, args) => {
+  fetchTasks(event);
+});
+
+const fetchTasks = (event) => {
+  listTask()
+    .then((data) => event.sender.send(tasks.GET_TASK, { data }))
+    .catch((error) => console.log(error));
+};
+
+ipcMain.on(tasks.DELETE_TASK, (event, args) => {
+  console.log('about to delete task by id');
+  deleteById(args.taskId)
+    .then((data) => fetchTasks(event))
+    .catch((error) => console.log(error));
+});
+
+ipcMain.on(tasks.DELETE_ALL_TASK, (event) => {
+  console.log('about to delete all task');
+  deleteAllTask()
+    .then((data) => fetchTasks(event))
+    .catch((error) => console.log(error));
 });
