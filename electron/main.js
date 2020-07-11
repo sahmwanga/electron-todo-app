@@ -33,6 +33,7 @@ function createWindow() {
     },
   });
   mainWindow.loadURL(startUrl);
+  // mainWindow.removeMenu()
   mainWindow.on('close', function () {
     mainWindow = null;
   });
