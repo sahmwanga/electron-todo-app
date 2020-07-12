@@ -1,6 +1,14 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-const url = require('url');
+// const path = require('path');
+// const url = require('url');
+
+const mainWindow = require('./mainWindow');
+
+//show notification
+const notifier = require('node-notifier');
+const onError = (err, response) => {
+  console.error(err, response);
+};
 
 const {
   addTask,
@@ -11,37 +19,36 @@ const {
 
 const { tasks } = require('../src/shared/constants');
 
-let mainWindow;
+// let mainWindow;
 
 function createWindow() {
-  const startUrl =
-    process.env.ELECTRON_START_URL ||
-    url.format({
-      pathname: path.join(__dirname, '../build/index.html'),
-      protocol: 'file:',
-      slashes: true,
-    });
-
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true,
-      //   contextIsolation: true,
-      //   enableRemoteModule: false,
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  });
-  mainWindow.loadURL(startUrl);
-  // mainWindow.removeMenu()
-  mainWindow.on('close', function () {
-    mainWindow = null;
-  });
-  //open debugging
-  // mainWindow.webContents.openDevTools();
+  // const startUrl =
+  //   process.env.ELECTRON_START_URL ||
+  //   url.format({
+  //     pathname: path.join(__dirname, '../build/index.html'),
+  //     protocol: 'file:',
+  //     slashes: true,
+  //   });
+  // mainWindow = new BrowserWindow({
+  //   width: 800,
+  //   height: 600,
+  //   webPreferences: {
+  //     nodeIntegration: true,
+  //     //   contextIsolation: true,
+  //     //   enableRemoteModule: false,
+  //     preload: path.join(__dirname, 'preload.js'),
+  //   },
+  // });
+  // mainWindow.loadURL(startUrl);
+  // // mainWindow.removeMenu()
+  // mainWindow.on('close', function () {
+  //   mainWindow = null;
+  // });
+  // //open debugging
+  // // mainWindow.webContents.openDevTools();
 }
 
-app.on('ready', createWindow);
+app.on('ready', mainWindow.createWindow);
 
 app.on('window-all-closed', function () {
   if (process.platform != 'darwin') {
@@ -57,7 +64,19 @@ app.on('activate', function () {
 ipcMain.on(tasks.CREATE_TASK, async (event, arg) => {
   try {
     const task = await addTask(arg);
-    fetchTasks(event);
+    if (task) {
+      fetchTasks();
+      notifier.notify(
+        {
+          message: 'New Task has been added',
+          title: 'Task Application',
+          sound: true,
+          icon: 'C:/images/ocw-logo.png',
+          wait: true,
+        },
+        onError
+      );
+    }
   } catch (error) {
     console.log(error);
   }
@@ -68,7 +87,7 @@ ipcMain.on(tasks.GET_TASK, (event, args) => {
 });
 
 const fetchTasks = (event) => {
-  listTask()
+  return listTask()
     .then((data) => event.sender.send(tasks.GET_TASK, { data }))
     .catch((error) => console.log(error));
 };
