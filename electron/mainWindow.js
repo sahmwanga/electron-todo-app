@@ -25,7 +25,7 @@ exports.createWindow = () => {
     },
   });
   this.mainWindow.loadURL(startUrl);
-  // this.mainWindow.removeMenu()
+  this.mainWindow.removeMenu();
   this.mainWindow.on('close', function () {
     this.mainWindow = null;
   });

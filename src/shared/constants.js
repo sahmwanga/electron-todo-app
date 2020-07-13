@@ -6,4 +6,10 @@ module.exports = {
     DELETE_TASK: 'delete_task',
     DELETE_ALL_TASK: 'delete_all_task',
   },
+  auth: {
+    USER_LOGIN: 'login',
+    USER_LOGIN_SUCCESSFUL: 'login_successful',
+    USER_LOGIN_FAIL: 'login_fail',
+    USER_LOGOUT: 'logout',
+  },
 };
