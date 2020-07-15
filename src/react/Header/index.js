@@ -1,6 +1,8 @@
 import React from 'react';
 import { Menu } from 'semantic-ui-react';
 
+import { clearToken } from '../services';
+
 export default function index() {
   return (
     <div>
@@ -9,7 +11,7 @@ export default function index() {
         <Menu.Item name="messages" />
         <Menu.Item name="friends" />
         <Menu.Menu position="right">
-          <Menu.Item name="logout" />
+          <Menu.Item onClick={() => clearToken()} name="logout" />
         </Menu.Menu>
       </Menu>
     </div>

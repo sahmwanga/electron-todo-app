@@ -1,16 +1,25 @@
 import React from 'react';
+import { login } from './services';
 
 import './App.css';
 
 export default function AuthPage() {
+  const loginFun = () => {
+    login({ username: 'admin', password: 'admin' });
+  };
   return (
     <div className="ui middle  aligned center aligned grid">
       <div className="column">
         <h2 className="ui teal image header">
-          {/* <img src="assets/images/logo.png" alt="" className="image" /> */}
           <div className="content">Log-in to your account</div>
+          <p>user: admin & pwd: admin</p>
         </h2>
-        <form className="ui large form">
+        <form
+          className="ui large form"
+          onSubmit={() => {
+            loginFun();
+          }}
+        >
           <div className="ui stacked segment">
             <div className="field">
               <div className="ui left icon input">
@@ -24,7 +33,9 @@ export default function AuthPage() {
                 <input type="password" name="password" placeholder="Password" />
               </div>
             </div>
-            <div className="ui fluid large teal submit button">Login</div>
+            <button type="submit" className="ui fluid large teal submit button">
+              Login
+            </button>
           </div>
 
           <div className="ui error message"></div>
