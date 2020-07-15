@@ -17,36 +17,11 @@ const {
   deleteById,
 } = require('./services/task.service');
 
-const { tasks } = require('../src/shared/constants');
+const { login } = require('./services/auth.service');
+
+const { tasks, auth } = require('../src/shared/constants');
 
 // let mainWindow;
-
-function createWindow() {
-  // const startUrl =
-  //   process.env.ELECTRON_START_URL ||
-  //   url.format({
-  //     pathname: path.join(__dirname, '../build/index.html'),
-  //     protocol: 'file:',
-  //     slashes: true,
-  //   });
-  // mainWindow = new BrowserWindow({
-  //   width: 800,
-  //   height: 600,
-  //   webPreferences: {
-  //     nodeIntegration: true,
-  //     //   contextIsolation: true,
-  //     //   enableRemoteModule: false,
-  //     preload: path.join(__dirname, 'preload.js'),
-  //   },
-  // });
-  // mainWindow.loadURL(startUrl);
-  // // mainWindow.removeMenu()
-  // mainWindow.on('close', function () {
-  //   mainWindow = null;
-  // });
-  // //open debugging
-  // // mainWindow.webContents.openDevTools();
-}
 
 app.on('ready', mainWindow.createWindow);
 
@@ -57,7 +32,7 @@ app.on('window-all-closed', function () {
 
 app.on('activate', function () {
   if (mainWindow == null) {
-    createWindow();
+    mainWindow.createWindow();
   }
 });
 
@@ -104,4 +79,14 @@ ipcMain.on(tasks.DELETE_ALL_TASK, (event) => {
   deleteAllTask()
     .then((data) => fetchTasks(event))
     .catch((error) => console.log(error));
+});
+
+ipcMain.handle(auth.USER_LOGIN, async (event, args) => {
+  console.log('about to login user...');
+  console.log(args);
+  const result = await login({
+    username: args.username,
+    password: args.password,
+  });
+  return result;
 });

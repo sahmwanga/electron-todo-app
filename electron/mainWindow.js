@@ -15,8 +15,9 @@ exports.createWindow = () => {
     });
 
   this.mainWindow = new BrowserWindow({
-    width: 800,
+    width: 1100,
     height: 600,
+    icon: __dirname + '/mario.png',
     webPreferences: {
       nodeIntegration: true,
       //   contextIsolation: true,
